@@ -1,0 +1,32 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "name": "Debug code-splash",
+            "program": "${workspaceFolder}/.build/debug/code-splash",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "swift: Build Debug code-splash"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "name": "Debug code-splash (port 3000)",
+            "program": "${workspaceFolder}/.build/debug/code-splash",
+            "args": ["-p", "3000"],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "swift: Build Debug code-splash"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "name": "Release code-splash",
+            "program": "${workspaceFolder}/.build/release/code-splash",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "swift: Build Release code-splash"
+        }
+    ]
+}
