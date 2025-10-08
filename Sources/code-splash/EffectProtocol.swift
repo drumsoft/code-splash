@@ -19,7 +19,8 @@ enum EffectFactory {
     private static let effects: [() -> VisualEffect] = [
         { ScatterEffect() },
         { PopOutEffect() },
-        { OrbitEffect() }
+        { OrbitEffect() },
+        { ScrollEffect() },
     ]
 
     static func nextEffect() -> VisualEffect {

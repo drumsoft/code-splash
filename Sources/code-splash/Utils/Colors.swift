@@ -42,4 +42,9 @@ class Colors {
 
         return NSColor(calibratedRed: red, green: green, blue: blue, alpha: 1.0)
     }
+
+    // Get a random color
+    func randomColor() -> NSColor {
+        return colors[Int.random(in: 0..<colors.count)]
+    }
 }
