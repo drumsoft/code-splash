@@ -6,101 +6,91 @@ import QuartzCore
 class OrbitEffect: VisualEffect {
     var name: String { "Orbit" }
 
+    private let baseDuration: Double = 0.8
+    private let lettersLimit = 120
+    private let lettersInterval: CFTimeInterval = 0.03
+    // total effect duration = baseDuration + lettersInterval * lettersLimit = 4.4s
+
+    private var id: UUID!
+    private var baseSize: CGFloat = 22.0
+
     func execute(text: String, in window: NSWindow) {
         guard let contentView = window.contentView else { return }
 
         let containerView = NSView(frame: contentView.bounds)
         containerView.wantsLayer = true
         guard let overlayWindow = window as? OverlayWindow else { return }
-        let effectId = overlayWindow.addEffectView(containerView)
+        id = overlayWindow.addEffectView(containerView)
 
-        let characters = Array(text.prefix(100)) // Limit to first 100 characters
-        let centerX = contentView.bounds.midX
-        let centerY = contentView.bounds.midY
+        baseSize = contentView.bounds.height / 20.0
 
-        for (index, char) in characters.enumerated() {
-            // Skip whitespace for cleaner effect
-            if char.isWhitespace && char != "\n" { continue }
+        let characters = Array(compactText(text).prefix(lettersLimit))
+        let centerX =
+            contentView.bounds.midX + CGFloat.random(in: -0.3...0.3) * contentView.bounds.width
+        let centerY =
+            contentView.bounds.midY + CGFloat.random(in: -0.3...0.3) * contentView.bounds.height
+        let colorPair = Colors.shared.colorIndexPair();
 
-            let textField = createTextField(with: String(char))
+        let startTime: CFTimeInterval = CACurrentMediaTime()
+        var views: [NSTextField?] = []
 
-            // Start position at center
-            textField.frame.origin = CGPoint(
-                x: centerX - textField.frame.width / 2,
-                y: centerY - textField.frame.height / 2
-            )
+        Timer.scheduledTimer(withTimeInterval: 1.0 / 60.0, repeats: true) { timer in
+            let elapsed = CACurrentMediaTime() - startTime
 
-            containerView.addSubview(textField)
+            // create new views
+            while elapsed > Double(views.count) * self.lettersInterval && views.count < characters.count {
+                let index = views.count
+                let char = characters[index]
+                let textField = TextFieldCache.shared.get(
+                    String(char),
+                    font: NSFont.monospacedSystemFont(ofSize: self.baseSize, weight: .regular),
+                    color: Colors.shared.gradientColor(at: CGFloat(index) / CGFloat(characters.count), between: colorPair),
+                    alpha: 0.0
+                )
+                textField.frame.origin = CGPoint(
+                    x: centerX - textField.frame.width / 2,
+                    y: centerY - textField.frame.height / 2
+                )
+                containerView.addSubview(textField)
+                views.append(textField)
+            }
 
-            // Each character starts at a different angle
-            let startAngle = (Double(index) * 0.3)
-            let delay = Double(index) * 0.02
+            // animate each views
+            var living = false
+            for (index, view) in views.enumerated() {
+                if view == nil { continue }
+                living = true
+                let time = elapsed - Double(index) * self.lettersInterval
+                if time < 0 { continue }
+                if time <= self.baseDuration {
+                    self.animate(view: view!, ratio: time / self.baseDuration)
+                } else {
+                    view!.removeFromSuperview()
+                    TextFieldCache.shared.release(view!)
+                    views[index] = nil
+                }
+            }
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-                self.animateOrbit(textField: textField,
-                                centerX: centerX,
-                                centerY: centerY,
-                                startAngle: startAngle)
+            // all animations done
+            if !living {
+                timer.invalidate()
+                self.stop()
             }
         }
-
-        // Clean up after animation completes
-        overlayWindow.scheduleCleanup(id: effectId, after: 2.5)
     }
 
-    private func animateOrbit(textField: NSTextField, centerX: CGFloat, centerY: CGFloat, startAngle: Double) {
-        let duration = 2.0
-        let rotations = 2.0 // Number of full rotations
-
-        // Create keyframe animation for circular path with expanding radius
-        let animation = CAKeyframeAnimation(keyPath: "position")
-        let path = CGMutablePath()
-
-        let steps = 60
-        for step in 0...steps {
-            let progress = Double(step) / Double(steps)
-            let angle = startAngle + (progress * rotations * 2 * .pi)
-
-            // Radius expands over time
-            let radius = CGFloat(progress * 400)
-
-            let x = centerX + cos(angle) * radius
-            let y = centerY + sin(angle) * radius
-
-            if step == 0 {
-                path.move(to: CGPoint(x: x, y: y))
-            } else {
-                path.addLine(to: CGPoint(x: x, y: y))
-            }
-        }
-
-        animation.path = path
-        animation.duration = duration
-        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-        animation.fillMode = .forwards
-        animation.isRemovedOnCompletion = false
-
-        // Fade out animation
-        let fadeOut = CABasicAnimation(keyPath: "opacity")
-        fadeOut.fromValue = 1.0
-        fadeOut.toValue = 0.0
-        fadeOut.beginTime = CACurrentMediaTime() + duration * 0.5
-        fadeOut.duration = duration * 0.5
-        fadeOut.fillMode = .forwards
-        fadeOut.isRemovedOnCompletion = false
-
-        textField.layer?.add(animation, forKey: "orbit")
-        textField.layer?.add(fadeOut, forKey: "fadeOut")
+    private func stop() {
+        overlayWindow.clearEffect(id: id)
     }
 
-    private func createTextField(with text: String) -> NSTextField {
-        let textField = NSTextField(labelWithString: text)
-        textField.font = NSFont.monospacedSystemFont(ofSize: 22, weight: .regular)
-        textField.textColor = NSColor(calibratedRed: 0.4, green: 1.0, blue: 0.6, alpha: 1.0)
-        textField.backgroundColor = .clear
-        textField.isBordered = false
-        textField.sizeToFit()
-        textField.wantsLayer = true
-        return textField
+    private func animate(view: NSView, ratio: Double) {
+        var transform: CATransform3D = CATransform3DIdentity
+        let msin = sin(.pi * ratio)
+        transform = CATransform3DTranslate(
+            transform, cos(.pi * ratio) * baseSize * 8, -msin * baseSize * 2, 0)
+        transform = CATransform3DRotate(transform, .pi * (ratio - 0.5), 0, 1, 0)
+        transform = CATransform3DScale(transform, msin + 1, msin + 1, 1)
+        view.layer?.transform = transform
+        view.layer?.opacity = 1 - Float(pow(2 * ratio - 1, 2))
     }
 }
