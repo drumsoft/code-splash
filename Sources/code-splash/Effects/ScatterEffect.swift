@@ -53,7 +53,7 @@ class ScatterEffect: VisualEffect {
                 containerView.addSubview(textField)
                 animatives.append(
                     Animative(
-                        textField, bounds: contentView.bounds, startTime: startTime, vx: vx, vy: vy,
+                        textField, bounds: contentView.bounds, vx: vx, vy: vy,
                         vz: vz, va: va))
             }
             curX += baseSize * 0.5;
@@ -95,7 +95,6 @@ class ScatterEffect: VisualEffect {
 
     private struct Animative {
         let view: NSTextField
-        let startTime: CFTimeInterval
 
         let bounds: CGRect
 
@@ -107,12 +106,11 @@ class ScatterEffect: VisualEffect {
         let z0: CGFloat = 100
 
         init(
-            _ view: NSTextField, bounds: CGRect, startTime: CFTimeInterval, vx: CGFloat,
+            _ view: NSTextField, bounds: CGRect, vx: CGFloat,
             vy: CGFloat, vz: CGFloat, va: CGFloat
         ) {
             self.view = view
             self.bounds = bounds
-            self.startTime = startTime
             self.vx = vx
             self.vy = vy
             self.vz = vz
