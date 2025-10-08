@@ -32,14 +32,14 @@ class OrbitEffect: VisualEffect {
         let colorPair = Colors.shared.colorIndexPair();
 
         let startTime: CFTimeInterval = CACurrentMediaTime()
-        var views: [NSTextField?] = []
+        var animatives: [Animative?] = []
 
         Timer.scheduledTimer(withTimeInterval: 1.0 / 60.0, repeats: true) { timer in
             let elapsed = CACurrentMediaTime() - startTime
 
             // create new views
-            while elapsed > Double(views.count) * self.lettersInterval && views.count < characters.count {
-                let index = views.count
+            while elapsed > Double(animatives.count) * self.lettersInterval && animatives.count < characters.count {
+                let index = animatives.count
                 let char = characters[index]
                 let textField = TextFieldCache.shared.get(
                     String(char),
@@ -52,22 +52,18 @@ class OrbitEffect: VisualEffect {
                     y: centerY - textField.frame.height / 2
                 )
                 containerView.addSubview(textField)
-                views.append(textField)
+                animatives.append(Animative(textField, baseSize: self.baseSize, startTime: elapsed, duration: self.baseDuration))
             }
 
             // animate each views
             var living = false
-            for (index, view) in views.enumerated() {
-                if view == nil { continue }
+            for (index, animative) in animatives.enumerated() {
+                if animative == nil { continue }
                 living = true
-                let time = elapsed - Double(index) * self.lettersInterval
-                if time < 0 { continue }
-                if time <= self.baseDuration {
-                    self.animate(view: view!, ratio: time / self.baseDuration)
-                } else {
-                    view!.removeFromSuperview()
-                    TextFieldCache.shared.release(view!)
-                    views[index] = nil
+                if !animative!.animate(elapsed: elapsed) {
+                    animative!.view.removeFromSuperview()
+                    TextFieldCache.shared.release(animative!.view)
+                    animatives[index] = nil
                 }
             }
 
@@ -83,14 +79,31 @@ class OrbitEffect: VisualEffect {
         overlayWindow.clearEffect(id: id)
     }
 
-    private func animate(view: NSView, ratio: Double) {
-        var transform: CATransform3D = CATransform3DIdentity
-        let msin = sin(.pi * ratio)
-        transform = CATransform3DTranslate(
-            transform, cos(.pi * ratio) * baseSize * 8, -msin * baseSize * 2, 0)
-        transform = CATransform3DRotate(transform, .pi * (ratio - 0.5), 0, 1, 0)
-        transform = CATransform3DScale(transform, msin + 1, msin + 1, 1)
-        view.layer?.transform = transform
-        view.layer?.opacity = 1 - Float(pow(2 * ratio - 1, 2))
+    private struct Animative {
+        let view: NSTextField
+        let startTime: CFTimeInterval
+        let baseSize: CGFloat
+        let duration: CFTimeInterval
+
+        init(_ view: NSTextField, baseSize: CGFloat, startTime: CFTimeInterval, duration: CFTimeInterval) {
+            self.view = view
+            self.startTime = startTime
+            self.baseSize = baseSize
+            self.duration = duration
+        }
+
+        func animate(elapsed: Double) -> Bool {
+            let ratio = CGFloat((elapsed - startTime) / duration)
+            if ratio > 1 { return false }
+            var transform: CATransform3D = CATransform3DIdentity
+            let msin = sin(.pi * ratio)
+            transform = CATransform3DTranslate(
+                transform, cos(.pi * ratio) * baseSize * 8, -msin * baseSize * 2, 0)
+            transform = CATransform3DRotate(transform, .pi * (ratio - 0.5), 0, 1, 0)
+            transform = CATransform3DScale(transform, msin + 1, msin + 1, 1)
+            view.layer?.transform = transform
+            view.layer?.opacity = 1 - Float(pow(2 * ratio - 1, 2))
+            return true
+        }
     }
 }
