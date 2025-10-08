@@ -5,9 +5,9 @@
             "type": "swift",
             "request": "launch",
             "name": "Debug code-splash",
-            "program": "${workspaceFolder}/.build/debug/code-splash",
+            "program": "${workspaceFolder:code-splash}/.build/debug/code-splash",
             "args": [],
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder:code-splash}",
             "preLaunchTask": "swift: Build Debug code-splash"
         },
         {
@@ -15,7 +15,10 @@
             "request": "launch",
             "name": "Debug code-splash (port 3000)",
             "program": "${workspaceFolder}/.build/debug/code-splash",
-            "args": ["-p", "3000"],
+            "args": [
+                "-p",
+                "3000"
+            ],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "swift: Build Debug code-splash"
         },
@@ -23,9 +26,9 @@
             "type": "swift",
             "request": "launch",
             "name": "Release code-splash",
-            "program": "${workspaceFolder}/.build/release/code-splash",
+            "program": "${workspaceFolder:code-splash}/.build/release/code-splash",
             "args": [],
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder:code-splash}",
             "preLaunchTask": "swift: Build Release code-splash"
         }
     ]
