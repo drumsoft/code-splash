@@ -2,14 +2,12 @@ import Foundation
 import AppKit
 import QuartzCore
 
-/// Effect where characters pop out sequentially, scaling up and fading
+/// An effect where characters seem to leap off the screen one after another.
 class PopOutEffect: VisualEffect {
     var name: String { "PopOut" }
 
-    private let baseDuration: Double = 0.8
     private let lettersLimit = 360
     private let lettersInterval: CFTimeInterval = 1 / 60
-    // total effect duration = baseDuration + lettersInterval * lettersLimit = 4.4s
 
     private var id: UUID!
     private var baseSize: CGFloat = 22.0

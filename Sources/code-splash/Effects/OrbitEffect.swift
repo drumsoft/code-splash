@@ -2,7 +2,7 @@ import Foundation
 import AppKit
 import QuartzCore
 
-/// Effect where characters orbit around the center while spiraling outward
+/// An effect where text rotates along a pseudo-3D elliptical orbit.
 class OrbitEffect: VisualEffect {
     var name: String { "Orbit" }
 

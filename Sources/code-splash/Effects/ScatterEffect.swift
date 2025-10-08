@@ -2,7 +2,7 @@ import Foundation
 import AppKit
 import QuartzCore
 
-/// Effect where characters scatter radially from the center of the screen
+/// Effect where characters burst out from the code.
 class ScatterEffect: VisualEffect {
     var name: String { "Scatter" }
 
@@ -30,7 +30,6 @@ class ScatterEffect: VisualEffect {
         let startTime: CFTimeInterval = CACurrentMediaTime()
         var animatives: [Animative?] = []
 
-        // iterate throuch letters of text (no compact, no limit)
         var curX = left;
         var curY = top;
         for char in text {

@@ -4,7 +4,6 @@ import AppKit
 /// Full-screen transparent overlay window for displaying visual effects
 class OverlayWindow: NSWindow {
     private var effectViews: [UUID: NSView] = [:]
-    private var cleanupWorkItems: [UUID: DispatchWorkItem] = [:]
 
     init() {
         // Get the main screen bounds
@@ -50,13 +49,10 @@ class OverlayWindow: NSWindow {
 
     /// Clear a specific effect by ID
     func clearEffect(id: UUID) {
-        // Cancel any pending cleanup
-        cleanupWorkItems[id]?.cancel()
-        cleanupWorkItems.removeValue(forKey: id)
-
         // Remove the view
         effectViews[id]?.removeFromSuperview()
         effectViews.removeValue(forKey: id)
+        print("   Removed effect view with ID: \(id)")
     }
 
     /// Add a view for the effect and return its ID
@@ -64,21 +60,7 @@ class OverlayWindow: NSWindow {
         let id = UUID()
         effectViews[id] = view
         contentView?.addSubview(view)
+        print("   Added effect view with ID: \(id)")
         return id
-    }
-
-    /// Schedule cleanup for a specific effect after a delay
-    func scheduleCleanup(id: UUID, after delay: TimeInterval) {
-        // Cancel any existing cleanup for this ID
-        cleanupWorkItems[id]?.cancel()
-
-        // Create new cleanup work item
-        let workItem = DispatchWorkItem { [weak self] in
-            self?.clearEffect(id: id)
-        }
-        cleanupWorkItems[id] = workItem
-
-        // Schedule cleanup
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: workItem)
     }
 }

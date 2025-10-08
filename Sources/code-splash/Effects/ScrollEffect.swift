@@ -2,9 +2,9 @@ import Foundation
 import AppKit
 import QuartzCore
 
-/// Effect where characters scatter radially from the center of the screen
+/// An effect where a mass of code scrolls vertically at high speed.
 class ScrollEffect: VisualEffect {
-    var name: String { "Scatter" }
+    var name: String { "Scroll" }
 
     private var id: UUID!
     private var baseSize: CGFloat = 22.0
