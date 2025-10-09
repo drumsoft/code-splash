@@ -13,9 +13,11 @@ protocol VisualEffect {
     func execute(text: String, in window: NSWindow)
 }
 
-/// Factory for creating visual effects in round-robin order
+/// Factory for creating visual effects with random selection
+/// Prevents the same effect from appearing more than twice in a row
 enum EffectFactory {
-    private static var currentIndex = 0
+    private static var lastIndex: Int? = nil
+    private static var consecutiveCount = 0
     private static let effects: [() -> VisualEffect] = [
         { ScatterEffect() },
         { PopOutEffect() },
@@ -25,8 +27,26 @@ enum EffectFactory {
     ]
 
     static func nextEffect() -> VisualEffect {
-        let effect = effects[currentIndex]()
-        currentIndex = (currentIndex + 1) % effects.count
-        return effect
+        let selectedIndex: Int
+
+        if consecutiveCount >= 2, let last = lastIndex {
+            // Force a different effect after 2 consecutive same effects
+            var candidates = Array(0..<effects.count)
+            candidates.remove(at: last)
+            selectedIndex = candidates.randomElement()!
+            consecutiveCount = 1
+        } else {
+            // Random selection
+            selectedIndex = Int.random(in: 0..<effects.count)
+
+            if selectedIndex == lastIndex {
+                consecutiveCount += 1
+            } else {
+                consecutiveCount = 1
+            }
+        }
+
+        lastIndex = selectedIndex
+        return effects[selectedIndex]()
     }
 }
