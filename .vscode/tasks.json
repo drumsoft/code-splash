@@ -1,31 +1,6 @@
 {
     "tasks": [
         {
-            "type": "process",
-            "label": "build",
-            "command": "swift",
-            "args": ["build", "-c", "release"],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "problemMatcher": {
-                "owner": "swift",
-                "fileLocation": ["relative", "${workspaceFolder}"],
-                "pattern": {
-                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
-                    "file": 1,
-                    "line": 2,
-                    "column": 3,
-                    "severity": 4,
-                    "message": 5
-                }
-            }
-        },
-        {
             "type": "shell",
             "label": "Post file to the server",
             "command": "curl",
