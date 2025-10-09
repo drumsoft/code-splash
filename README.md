@@ -6,8 +6,9 @@ A lightweight visual effects overlay for live coding presentations on macOS.
 
 - **Transparent overlay window**: Always on top, click-through, fullscreen effects
 - **HTTP-triggered animations**: Send code via POST request to trigger visual effects
-- **Three effect types**: Scatter, PopOut, and Orbit animations (round-robin)
+- **Five effect types**: Dynamic visual effects with random selection (prevents 3+ consecutive repeats)
 - **Concurrent animations**: Multiple effects can run simultaneously
+- **Adjustable opacity**: Control effect visibility to minimize coding interference
 - **Low CPU usage**: Optimized for real-time performance alongside audio processing
 
 ## Installation
@@ -73,13 +74,15 @@ Add to your `.vscode/tasks.json`:
 
 ## Effect Types
 
-Effects are displayed in round-robin order:
+Effects are randomly selected with intelligent prevention of excessive repetition (same effect won't appear more than twice in a row):
 
-1. **Scatter**: Characters fly out radially from the center
-2. **PopOut**: Characters pop out sequentially with scaling
-3. **Orbit**: Characters spiral outward in a circular motion
+1. **Scatter**: Characters burst out from the code block in all directions with physics-based motion
+2. **PopOut**: Characters leap off the screen one after another with 3D perspective and gravity
+3. **Orbit**: Text rotates along a pseudo-3D elliptical orbit path
+4. **Scroll**: A mass of code scrolls vertically at high speed across the screen
+5. **Accelerate**: Lines of code flow in from the side, accelerate, and shoot away
 
-Each effect automatically fades out after 2-3 seconds.
+Each effect features dynamic positioning, gradient colors, and automatic cleanup.
 
 ## Options
 
