@@ -13,6 +13,25 @@ A lightweight visual effects overlay for live coding presentations on macOS.
 
 ## Installation
 
+### Build with CMake (recommended)
+
+Generate build system. For debug builds, specify `-DCMAKE_BUILD_TYPE=Debug`.
+
+```
+cd /path/to/code-splash
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+```
+
+build.
+
+```
+cmake --build build
+```
+
+The executable will be located at `build/bin/code-splash`.
+
+### Alternative: Build with Swift Package Manager
+
 ```bash
 swift build -c release
 ```
@@ -24,21 +43,18 @@ The executable will be located at `.build/release/code-splash`.
 ### Start the server
 
 ```bash
-# Default settings (port 8080, full opacity)
-.build/release/code-splash
+# Using CMake build
+build/bin/code-splash
 
-# Custom port
-.build/release/code-splash -p 3000
-
-# Reduce opacity to 50% (less obtrusive)
-.build/release/code-splash -o 0.5
-
-# Combine options
-.build/release/code-splash -p 3000 -o 0.7
-
-# Show help
-.build/release/code-splash --help
+# Or using release build
+release/code-splash
 ```
+
+### Options
+
+- `-p, --port PORT`: Port number to listen on (default: 8080)
+- `-o, --opacity OPACITY`: Maximum opacity for effects, 0.0-1.0 (default: 1.0)
+- `-h, --help`: Show help message
 
 ### Trigger effects
 
@@ -83,12 +99,6 @@ Effects are randomly selected with intelligent prevention of excessive repetitio
 5. **Accelerate**: Lines of code flow in from the side, accelerate, and shoot away
 
 Each effect features dynamic positioning, gradient colors, and automatic cleanup.
-
-## Options
-
-- `-p, --port PORT`: Port number to listen on (default: 8080)
-- `-o, --opacity OPACITY`: Maximum opacity for effects, 0.0-1.0 (default: 1.0)
-- `-h, --help`: Show help message
 
 ## Requirements
 

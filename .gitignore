@@ -6,6 +6,9 @@ Package.resolved
 xcuserdata/
 .swiftpm/
 
+# CMake
+build/
+
 # macOS
 .DS_Store
 .AppleDouble
