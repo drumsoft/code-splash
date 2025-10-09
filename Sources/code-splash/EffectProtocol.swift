@@ -21,6 +21,7 @@ enum EffectFactory {
         { PopOutEffect() },
         { OrbitEffect() },
         { ScrollEffect() },
+        { AccelerateEffect() },
     ]
 
     static func nextEffect() -> VisualEffect {
