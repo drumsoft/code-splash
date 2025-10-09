@@ -2,9 +2,14 @@ import Foundation
 import AppKit
 
 // Parse command line arguments
-func parseArguments() -> UInt16 {
+struct Options {
+    var port: UInt16 = 8080
+    var maxOpacity: CGFloat = 1.0
+}
+
+func parseArguments() -> Options {
     let arguments = CommandLine.arguments
-    var port: UInt16 = 8080 // Default port
+    var options = Options()
 
     var i = 1
     while i < arguments.count {
@@ -13,49 +18,70 @@ func parseArguments() -> UInt16 {
         if arg == "-p" || arg == "--port" {
             if i + 1 < arguments.count {
                 if let parsedPort = UInt16(arguments[i + 1]) {
-                    port = parsedPort
+                    options.port = parsedPort
                     i += 2
                     continue
                 } else {
                     print("❌ Invalid port number: \(arguments[i + 1])")
-                    print("Usage: code-splash [-p PORT]")
+                    printUsage()
                     exit(1)
                 }
             } else {
                 print("❌ Missing port number after -p option")
-                print("Usage: code-splash [-p PORT]")
+                printUsage()
+                exit(1)
+            }
+        } else if arg == "-o" || arg == "--opacity" {
+            if i + 1 < arguments.count {
+                if let parsedOpacity = Double(arguments[i + 1]), parsedOpacity >= 0.0 && parsedOpacity <= 1.0 {
+                    options.maxOpacity = CGFloat(parsedOpacity)
+                    i += 2
+                    continue
+                } else {
+                    print("❌ Invalid opacity value: \(arguments[i + 1]) (must be between 0.0 and 1.0)")
+                    printUsage()
+                    exit(1)
+                }
+            } else {
+                print("❌ Missing opacity value after -o option")
+                printUsage()
                 exit(1)
             }
         } else if arg == "-h" || arg == "--help" {
-            print("Usage: code-splash [-p PORT]")
-            print("")
-            print("Options:")
-            print("  -p, --port PORT    Port number to listen on (default: 8080)")
-            print("  -h, --help         Show this help message")
+            printUsage()
             exit(0)
         } else {
             print("❌ Unknown option: \(arg)")
-            print("Usage: code-splash [-p PORT]")
+            printUsage()
             exit(1)
         }
 
         i += 1
     }
 
-    return port
+    return options
+}
+
+func printUsage() {
+    print("Usage: code-splash [-p PORT] [-o OPACITY]")
+    print("")
+    print("Options:")
+    print("  -p, --port PORT        Port number to listen on (default: 8080)")
+    print("  -o, --opacity OPACITY  Maximum opacity for effects, 0.0-1.0 (default: 1.0)")
+    print("  -h, --help             Show this help message")
 }
 
 // Ensure we're running with UI capabilities
 let app = NSApplication.shared
 
-// Create overlay window
-let overlayWindow = OverlayWindow()
+// Parse options from command line
+let options = parseArguments()
 
-// Parse port from command line
-let port = parseArguments()
+// Create overlay window with max opacity
+let overlayWindow = OverlayWindow(maxOpacity: options.maxOpacity)
 
 // Create and start HTTP server
-let server = HTTPServer(port: port) { codeText in
+let server = HTTPServer(port: options.port) { codeText in
     // Show effect when code is received
     overlayWindow.showEffect(text: codeText)
 }

@@ -4,8 +4,11 @@ import AppKit
 /// Full-screen transparent overlay window for displaying visual effects
 class OverlayWindow: NSWindow {
     private var effectViews: [UUID: NSView] = [:]
+    private let maxOpacity: CGFloat
 
-    init() {
+    init(maxOpacity: CGFloat = 1.0) {
+        self.maxOpacity = maxOpacity
+
         // Get the main screen bounds
         let screen = NSScreen.main ?? NSScreen.screens[0]
         let screenFrame = screen.frame
@@ -25,10 +28,11 @@ class OverlayWindow: NSWindow {
         self.ignoresMouseEvents = true
         self.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
 
-        // Set content view
+        // Set content view with max opacity
         let contentView = NSView(frame: screenFrame)
         contentView.wantsLayer = true
         contentView.layer?.backgroundColor = NSColor.clear.cgColor
+        contentView.alphaValue = maxOpacity
         self.contentView = contentView
     }
 

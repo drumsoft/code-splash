@@ -23,11 +23,17 @@ The executable will be located at `.build/release/code-splash`.
 ### Start the server
 
 ```bash
-# Default port (8080)
+# Default settings (port 8080, full opacity)
 .build/release/code-splash
 
 # Custom port
 .build/release/code-splash -p 3000
+
+# Reduce opacity to 50% (less obtrusive)
+.build/release/code-splash -o 0.5
+
+# Combine options
+.build/release/code-splash -p 3000 -o 0.7
 
 # Show help
 .build/release/code-splash --help
@@ -78,6 +84,7 @@ Each effect automatically fades out after 2-3 seconds.
 ## Options
 
 - `-p, --port PORT`: Port number to listen on (default: 8080)
+- `-o, --opacity OPACITY`: Maximum opacity for effects, 0.0-1.0 (default: 1.0)
 - `-h, --help`: Show help message
 
 ## Requirements
