@@ -24,7 +24,7 @@ class OrbitEffect: VisualEffect {
 
         baseSize = contentView.bounds.height / 20.0
 
-        let characters = Array(compactText(text).prefix(lettersLimit))
+        let characters = Array(randomSubstring(compactText(text), length: lettersLimit))
         let centerX =
             contentView.bounds.midX + CGFloat.random(in: -0.3...0.3) * contentView.bounds.width
         let centerY =

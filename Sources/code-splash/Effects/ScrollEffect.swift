@@ -23,7 +23,7 @@ class ScrollEffect: VisualEffect {
         var animative: Animative? = nil
 
         let textField = TextFieldCache.shared.get(
-            String(text),
+            randomLineSubstring(text, lines: 100),
             font: NSFont.monospacedSystemFont(ofSize: self.baseSize * 3, weight: .regular),
             color: Colors.shared.randomColor(),
             alpha: 1.0

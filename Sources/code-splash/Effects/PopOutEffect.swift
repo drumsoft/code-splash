@@ -22,7 +22,7 @@ class PopOutEffect: VisualEffect {
 
         baseSize = contentView.bounds.height / 10.0
 
-        let characters = Array(text.prefix(lettersLimit))
+        let characters = Array(randomLineSubstring(text, lines: 5))
         let centerX = contentView.bounds.midX
         let left = contentView.bounds.minX + 0.1 * contentView.bounds.width
         let right = contentView.bounds.maxX

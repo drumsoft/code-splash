@@ -23,26 +23,29 @@ class ScatterEffect: VisualEffect {
         let centerY = contentView.bounds.midY + CGFloat.random(in: -0.2...0.2) * contentView.bounds.height
         let left = centerX - 0.14 * contentView.bounds.height
         let right = centerX + 0.14 * contentView.bounds.height
-        let top = centerY - 0.2 * contentView.bounds.height
-        let bottom = centerY + 0.2 * contentView.bounds.height
+        let top = centerY + 0.2 * contentView.bounds.height
+        let bottom = centerY - 0.2 * contentView.bounds.height
         let colorPair = Colors.shared.colorIndexPair();
 
         let startTime: CFTimeInterval = CACurrentMediaTime()
         var animatives: [Animative?] = []
 
         var curX = left;
-        var curY = top;
-        for char in text {
+        var curY = top - baseSize;
+        let characters = Array(randomLineSubstring(text, lines: 20))
+        var index = 0;
+        while index < characters.count {
+            let char = characters[index]
             if !char.isWhitespace && char != "\n" {
-                let vx = 10.0 * (curX - centerX) + CGFloat.random(in: -10.0...10.0)
-                let vy = 10.0 * (curY - centerY) + CGFloat.random(in: -10.0...10.0)
-                let vz = CGFloat.random(in: 80.0...100.0)
-                let va = CGFloat.random(in: -10.0...10.0)
+                let vx = 10.0 * (curX - centerX) + CGFloat.random(in: -5.0...5.0)
+                let vy = 10.0 * (curY - centerY) + CGFloat.random(in: -5.0...5.0)
+                let vz = CGFloat.random(in: 40.0...60.0)
+                let va = CGFloat.random(in: -1.0...1.0)
                 let textField = TextFieldCache.shared.get(
                     String(char),
                     font: NSFont.monospacedSystemFont(ofSize: self.baseSize * 3, weight: .regular),
                     color: Colors.shared.gradientColor(
-                        at: (curY - top) / (bottom - top), between: colorPair),
+                        at: (top - curY) / (top - bottom), between: colorPair),
                     alpha: 0.0
                 )
                 textField.frame.origin = CGPoint(
@@ -56,13 +59,20 @@ class ScatterEffect: VisualEffect {
                         vz: vz, va: va))
             }
             curX += baseSize * 0.5;
-            if curX >= right || char == "\n" {
+            if char == "\n" {
                 curX = left;
-                curY += baseSize;
+                curY -= baseSize;
+            } else if curX >= right {
+                curX = left;
+                curY -= baseSize;
+                while index < characters.count && characters[index] != "\n" {
+                    index += 1;
+                }
             }
-            if curY >= bottom {
+            if curY < bottom {
                 break;
             }
+            index += 1;
         }
 
         Timer.scheduledTimer(withTimeInterval: 1.0 / 60.0, repeats: true) { timer in
