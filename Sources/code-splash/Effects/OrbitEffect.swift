@@ -38,13 +38,16 @@ class OrbitEffect: VisualEffect {
             let elapsed = CACurrentMediaTime() - startTime
 
             // create new views
-            while elapsed > Double(animatives.count) * self.lettersInterval && animatives.count < characters.count {
+            while elapsed > Double(animatives.count) * self.lettersInterval
+                && animatives.count < characters.count
+            {
                 let index = animatives.count
                 let char = characters[index]
                 let textField = TextFieldCache.shared.get(
                     String(char),
                     font: NSFont.monospacedSystemFont(ofSize: self.baseSize, weight: .regular),
-                    color: Colors.shared.gradientColor(at: CGFloat(index) / CGFloat(characters.count), between: colorPair),
+                    color: Colors.shared.gradientColor(
+                        at: CGFloat(index) / CGFloat(characters.count), between: colorPair),
                     alpha: 0.0
                 )
                 textField.frame.origin = CGPoint(
@@ -52,7 +55,10 @@ class OrbitEffect: VisualEffect {
                     y: centerY - textField.frame.height / 2
                 )
                 containerView.addSubview(textField)
-                animatives.append(Animative(textField, baseSize: self.baseSize, startTime: elapsed, duration: self.baseDuration))
+                animatives.append(
+                    Animative(
+                        textField, baseSize: self.baseSize, startTime: elapsed,
+                        duration: self.baseDuration))
             }
 
             // animate each views
@@ -85,7 +91,10 @@ class OrbitEffect: VisualEffect {
         let baseSize: CGFloat
         let duration: CFTimeInterval
 
-        init(_ view: NSTextField, baseSize: CGFloat, startTime: CFTimeInterval, duration: CFTimeInterval) {
+        init(
+            _ view: NSTextField, baseSize: CGFloat, startTime: CFTimeInterval,
+            duration: CFTimeInterval
+        ) {
             self.view = view
             self.startTime = startTime
             self.baseSize = baseSize
@@ -102,7 +111,7 @@ class OrbitEffect: VisualEffect {
             transform = CATransform3DRotate(transform, .pi * (ratio - 0.5), 0, 1, 0)
             transform = CATransform3DScale(transform, msin + 1, msin + 1, 1)
             view.layer?.transform = transform
-            view.layer?.opacity = 1 - Float(pow(2 * ratio - 1, 2))
+            view.layer?.opacity = ratio == 0 ? 0 : 1
             return true
         }
     }
