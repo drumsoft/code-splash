@@ -33,7 +33,7 @@ enum EffectFactory {
             // Force a different effect after 2 consecutive same effects
             var candidates = Array(0..<effects.count)
             candidates.remove(at: last)
-            selectedIndex = candidates.randomElement()!
+            selectedIndex = candidates.randomElement() ?? 0
             consecutiveCount = 1
         } else {
             // Random selection
