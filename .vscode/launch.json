@@ -9,6 +9,15 @@
             "args": [],
             "cwd": "${workspaceFolder:code-splash}",
             "preLaunchTask": "swift: Build Debug code-splash"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:code-splash}",
+            "name": "Release code-splash",
+            "program": "${workspaceFolder:code-splash}/.build/release/code-splash",
+            "preLaunchTask": "swift: Build Release code-splash"
         }
     ]
 }
